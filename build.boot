@@ -14,7 +14,7 @@
  :dependencies   (into [] (:dependencies lein-proj)))
 
 (require
- '[adzerk.boot-reload    :refer [reload]]
+ '[adzerk.boot-reload :refer [reload]]
  '[reloaded.repl :refer [init start stop go reset]]
  '[ranalyzer.system :refer [make-system]]
  '[danielsz.boot-environ :refer [environ]]
