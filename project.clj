@@ -16,7 +16,8 @@
                  [com.taoensso/timbre "3.3.1"]
                  [jarohen/chime "0.1.6"]
                  [manifold "0.1.0"]
-                 [org.clojure/tools.nrepl "0.2.10"]])
+                 [org.clojure/tools.nrepl "0.2.10"]
+                 [prismatic/plumbing "0.4.4"]])
   
 
 

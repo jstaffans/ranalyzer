@@ -15,12 +15,12 @@
           (swap! results conj post)
           (recur))))))
 
-(defrecord Analyzer [chans results]
+(defrecord Analyzer [chan results]
   component/Lifecycle
 
   (start [component]
     (info "Analyzer started")
-    (start-analyzer-workers (:posts-chan chans) results)
+    (start-analyzer-workers chan results)
     (assoc component :analyzer ::started))
 
   (stop [component]
@@ -28,7 +28,7 @@
     (assoc component :analyzer nil)))
 
 (defn new-analyzer []
-  (map->Analyzer {:chans {} :results (atom [])}))
+  (map->Analyzer {:results (atom [])}))
 
 
 (comment

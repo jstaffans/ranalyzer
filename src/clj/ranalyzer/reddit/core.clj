@@ -11,7 +11,7 @@
   [chan]
   (async/>!! chan {:name "Some article"}))
 
-(defrecord Reddit [chans delay interval]
+(defrecord Reddit [chan delay interval]
   component/Lifecycle
 
   (start [component]
@@ -24,23 +24,21 @@
       (assoc component
         :event-chan event-chan
 
-        :loop-chan (async/go
-                     (loop []
+        :loop-chan (async/go-loop []
                        (async/alt!
                          ; Exit loop if value was sent on poison-pill-chan
                          poison-pill-chan nil
-
                          event-chan ([event]
-                                      (get-random-article (:posts-chan chans))
+                                      (get-random-article chan)
                                       (recur))
                          :priority true))
-                     (info "Closing loop channel"))
 
         :poison-pill-chan poison-pill-chan)))
 
   (stop [component]
-    (async/close! (:event-chan component))
     (async/>!! (:poison-pill-chan component) :stop)
+
+    (async/close! (:event-chan component))
     (async/close! (:poison-pill-chan component))
     (assoc component
       :event-chan nil
@@ -51,15 +49,3 @@
 (defn new-reddit [& {:keys [delay interval] :or {delay 0 interval 5}}]
   (->Reddit {} delay interval))
 
-(defrecord RedditChannels []
-  component/Lifecycle
-
-  (start [component]
-    (assoc component :posts-chan (async/chan)))
-
-  (stop [component]
-    (async/close! (:posts-chan component))
-    (assoc component :posts-chan nil)))
-
-(defn new-reddit-channels []
-  (->RedditChannels))

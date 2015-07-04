@@ -16,7 +16,7 @@
 (require
  '[adzerk.boot-reload    :refer [reload]]
  '[reloaded.repl :refer [init start stop go reset]]
- '[ranalyzer.systems :refer [dev-system prod-system]]
+ '[ranalyzer.system :refer [make-system]]
  '[danielsz.boot-environ :refer [environ]]
  '[system.boot :refer [system run]])
 
@@ -26,23 +26,16 @@
   (comp
    (environ :env {:http-port 3000})
    (watch :verbose true)
-   (system :sys #'dev-system :auto-start false :hot-reload true :files ["handler.clj"])
+   (system :sys #'make-system :auto-start false :hot-reload true :files ["handler.clj"])
    (reload)
    (repl :server true)))
-
-(deftask dev-run
-  "Run a dev system from the command line"
-  []
-  (comp
-   (environ :env {:http-port 3000})
-   (run :main-namespace "ranalyzer.core" :arguments [#'dev-system])
-   (wait)))
 
 (deftask prod-run
   "Run a prod system from the command line"
   []
   (comp
    (environ :env {:http-port 8008
+                  :repl-server true
                   :repl-port 8009})
-   (run :main-namespace "ranalyzer.core" :arguments [#'prod-system])
+   (run :main-namespace "ranalyzer.core")
    (wait)))
