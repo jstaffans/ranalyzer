@@ -5,7 +5,8 @@
             [clojure.core.async :as async]
             [chime :refer [chime-ch]]
             [clj-time.core :as ct]
-            [clj-time.periodic :as cp]))
+            [clj-time.periodic :as cp]
+            [ranalyzer.util :as util]))
 
 (defn get-random-article
   [chan]
@@ -37,13 +38,7 @@
 
   (stop [component]
     (async/>!! (:poison-pill-chan component) :stop)
-
-    (async/close! (:event-chan component))
-    (async/close! (:poison-pill-chan component))
-    (assoc component
-      :event-chan nil
-      :loop-chan nil
-      :poison-pill-chan nil)
+    (util/close-channels component :event-chan :loop-chan :poison-pill-chan)
     (info "Reddit poller stopped")))
 
 (defn new-reddit [& {:keys [delay interval] :or {delay 0 interval 5}}]
